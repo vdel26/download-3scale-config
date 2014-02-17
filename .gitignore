@@ -1,0 +1,4 @@
+config.json
+test/config-test.json
+.DS_Store
+node_modules/*

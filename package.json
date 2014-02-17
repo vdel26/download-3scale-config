@@ -1,0 +1,27 @@
+{
+  "name": "download-nginx-config",
+  "version": "0.0.1",
+  "description": "Get your 3scale Nginx configs",
+  "main": "index.js",
+  "repository": {},
+  "scripts": {
+    "test": "node_modules/mocha/bin/mocha test/"
+  },
+  "keywords": [
+    "3scale",
+    "nginx"
+  ],
+  "author": "Victor Delgado",
+  "license": "MIT",
+  "dependencies": {
+    "nconf": "~0.6.9",
+    "unzip": "~0.1.9",
+    "prompt": "~0.2.12"
+  },
+  "devDependencies": {
+    "chai": "~1.9.0",
+    "mocha": "~1.17.1",
+    "nock": "~0.27.2",
+    "rimraf": "~2.2.6"
+  }
+}
