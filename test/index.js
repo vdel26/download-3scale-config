@@ -21,7 +21,7 @@ describe('Nginx download app', function () {
     });
 
     it('should require two inputs', function (done) {
-      app.getUserInfo(function (res) {
+      app.getUserInfo(function (err, res) {
         expect(res).to.have.a.property('domain', 'dummydomain-admin.3scale.net');
         expect(res).to.have.a.property('providerKey', '1234567890ABC');
         expect(Object.keys(res).length).to.equal(2);

@@ -4,27 +4,8 @@ var nconf  = require('nconf'),
     fs     = require('fs'),
     prompt = require('prompt');
 
-var defaults = {
-  port: 443,
-  path: '/admin/api/nginx.zip?provider_key=',
-  method: 'GET'
-};
-
 // user configurations
 nconf.file({ file: 'config.json' });
-
-exports.main = function main () {
-  getUserInfo(function (userInput) {
-    var opts = defaults;
-    opts.hostname = userInput.domain;
-    opts.path = opts.path + userInput.providerKey;
-
-    requestZipBundle(opts, function (err) {
-      if (err) throw new Error (err);
-      console.log('files downloaded! woohoo!');
-    });
-  });
-};
 
 /**
  * Get user input and save it to config.json
@@ -50,7 +31,7 @@ function getUserInfo (cb) {
       }
     }
   }, function (err, response) {
-    if (err) throw new Error(err);
+    if (err) return cb(err);
     saveInfo({
       domain: response.domain,
       providerKey: response.providerKey
@@ -65,8 +46,8 @@ function saveInfo (userInput, cb) {
       nconf.set(param, userInput[param]);
   }
   nconf.save(function (err) {
-    if (err) throw new Error('data could not be saved');
-    cb(userInput);
+    if (err) return cb(err);
+    cb(null, userInput);
   });
 }
 
@@ -81,7 +62,7 @@ function requestZipBundle (opts, cb) {
     unpackZipResponse(response, cb);
   });
   req.on('error', function (err) {
-    console.log('your files couldn\'t be retrieved' + err);
+    return cb(err);
   });
   req.end();
 }
@@ -91,16 +72,12 @@ function unpackZipResponse (response, cb) {
   response
     .pipe(unzip.Extract({ path: __dirname + '/nginx-conf' }))
     .on('close', function () {
-      console.log('your files were downloaded');
-      cb(null);
+      return cb(null);
     })
     .on('error', function (err) {
-      console.log(err);
-      cb(err);
+      return cb(err);
     });
 }
-
-exports.main();
 
 exports.getUserInfo = getUserInfo;
 exports.requestZipBundle = requestZipBundle;
