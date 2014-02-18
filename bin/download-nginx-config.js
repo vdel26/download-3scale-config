@@ -9,14 +9,20 @@ var defaults = {
 
 function main () {
   mod.getUserInfo(function (err, userInput) {
-    if (err) throw new Error(err);
+    if (err) {
+      console.log('ERROR: ' + err.message);
+      return;
+    }
     var opts = defaults;
     opts.hostname = userInput.domain;
     opts.path = opts.path + userInput.providerKey;
 
     mod.requestZipBundle(opts, function (err) {
-      if (err) throw new Error(err);
-      console.log('files downloaded! woohoo!');
+      if (err) {
+        console.log('ERROR: ' + err.message);
+        return;
+      }
+      console.log('files were downloaded! woohoo!');
     });
   });
 }
