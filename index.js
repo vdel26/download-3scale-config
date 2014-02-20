@@ -12,9 +12,8 @@ var nconf  = require('nconf'),
  * @param  {Function} cb - callback
  */
 function getInfo (cb) {
-  nconf.file('config.json');
-
   if (fs.existsSync('config.json')) {
+    nconf.file('config.json');
     return cb(null, nconf.get());
   }
   else {
