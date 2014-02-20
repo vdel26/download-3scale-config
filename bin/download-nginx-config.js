@@ -28,13 +28,13 @@ function main () {
         return process.exit(1);
       }
       console.log('Nginx configuration were downloaded to '
-        + path.join(dirPath, 'nginx-conf'));
+        + path.join(process.env.HOME, '3scale-nginx-conf'));
     });
   });
 }
 
 if (require.main === module) {
-  if (process.argv[2] === '--reset') {
+  if (process.argv[2] === '--reset' && fs.existsSync('config.json')) {
     fs.unlinkSync('config.json')
   }
   main();

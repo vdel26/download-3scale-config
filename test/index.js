@@ -2,6 +2,7 @@ var expect = require('chai').expect,
     app    = require('../index.js'),
     prompt = require('prompt'),
     fs     = require('fs'),
+    path   = require('path'),
     rm     = require('rimraf'),
     nock   = require('nock');
 
@@ -43,6 +44,8 @@ describe('Nginx download app', function () {
 
 
   describe('#requestZipBundle', function () {
+    var unzipPath = path.resolve(process.env.HOME, '3scale-nginx-conf');
+
     beforeEach(function () {
       nock('https://dummydomain-admin.3scale.net')
         .get('/admin/api/nginx.zip?provider_key=1234567890ABC')
@@ -53,7 +56,7 @@ describe('Nginx download app', function () {
 
     afterEach(function (done) {
       // delete folder with unzipped files
-      rm('nginx-conf', done);
+      rm(unzipPath, done);
     });
 
     it('should download nginxtest.zip and unzip it to /nginx-conf', function (done) {
@@ -64,7 +67,7 @@ describe('Nginx download app', function () {
         method: 'GET'
       };
       app.requestZipBundle(opts, function (err) {
-        expect(fs.existsSync('nginx-conf')).to.be.true;
+        expect(fs.existsSync(unzipPath)).to.be.true;
         done();
       });
     });

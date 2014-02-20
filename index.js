@@ -2,6 +2,7 @@ var nconf  = require('nconf'),
     unzip  = require('unzip'),
     https  = require('https'),
     fs     = require('fs'),
+    path   = require('path'),
     prompt = require('prompt');
 
 
@@ -83,8 +84,9 @@ function requestZipBundle (opts, cb) {
 
 
 function unpackZipResponse (response, cb) {
+  var unzipPath = path.resolve(process.env.HOME, '3scale-nginx-conf');
   response
-    .pipe(unzip.Extract({ path: __dirname + '/nginx-conf' }))
+    .pipe(unzip.Extract({ path: unzipPath }))
     .on('close', function () {
       return cb(null);
     })
