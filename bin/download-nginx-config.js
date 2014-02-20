@@ -1,5 +1,9 @@
 #!/usr/bin/env node
-var mod = require('../index.js');
+var mod   = require('../index.js'),
+    fs    = require('fs'),
+    path  = require('path');
+
+var dirPath = path.resolve(__dirname, '..');
 
 var defaults = {
   port: 443,
@@ -8,10 +12,10 @@ var defaults = {
 };
 
 function main () {
-  mod.getUserInfo(function (err, userInput) {
+  mod.getInfo(function (err, userInput) {
     if (err) {
       console.log('ERROR: ' + err.message);
-      return;
+      return process.exit(1);
     }
     var opts = defaults;
     opts.hostname = userInput.domain;
@@ -20,13 +24,18 @@ function main () {
     mod.requestZipBundle(opts, function (err) {
       if (err) {
         console.log('ERROR: ' + err.message);
-        return;
+        fs.unlinkSync('config.json');
+        return process.exit(1);
       }
-      console.log('files were downloaded! woohoo!');
+      console.log('Nginx configuration were downloaded to '
+        + path.join(dirPath, 'nginx-conf'));
     });
   });
 }
 
 if (require.main === module) {
+  if (process.argv[2] === '--reset') {
+    fs.unlinkSync('config.json')
+  }
   main();
 }

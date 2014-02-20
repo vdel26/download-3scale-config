@@ -4,13 +4,24 @@ var nconf  = require('nconf'),
     fs     = require('fs'),
     prompt = require('prompt');
 
-// user configurations
-nconf.file({ file: 'config.json' });
 
 /**
- * Get user input and save it to config.json
- * @param  {Function} cb callback
+ * Get user info from previous config or
+ * otherwise prompt him
+ * @param  {Function} cb - callback
  */
+function getInfo (cb) {
+  nconf.file('config.json');
+
+  if (fs.existsSync('config.json')) {
+    return cb(null, nconf.get());
+  }
+  else {
+    return getUserInfo(cb);
+  }
+}
+
+
 function getUserInfo (cb) {
   prompt.start();
 
@@ -23,7 +34,7 @@ function getUserInfo (cb) {
         description: '3scale admin domain '.magenta,
         required: true,
         pattern: /\w+-admin\.3scale\.net/,
-        message: 'Wrong format (e.g. victordg-admin.3scale.net)'
+        message: 'Wrong format (e.g. mycompany-admin.3scale.net)'
       },
       providerKey: {
         description: 'provider key '.magenta,
@@ -41,21 +52,24 @@ function getUserInfo (cb) {
 
 
 function saveInfo (userInput, cb) {
+  // save user info to 'config.json'
+  nconf.file('config.json');
+
   for (var param in userInput) {
     if (userInput.hasOwnProperty(param))
       nconf.set(param, userInput[param]);
   }
   nconf.save(function (err) {
     if (err) return cb(err);
-    cb(null, userInput);
+    return cb(null, userInput);
   });
 }
 
 
 /**
  * Request zip file and unzip it to disk
- * @param  {Object}   opts request options
- * @param  {Function} cb   callback
+ * @param  {Object}   opts - request options
+ * @param  {Function} cb   - callback
  */
 function requestZipBundle (opts, cb) {
   var req = https.request(opts, function (response) {
@@ -79,5 +93,7 @@ function unpackZipResponse (response, cb) {
     });
 }
 
+
+exports.getInfo = getInfo;
 exports.getUserInfo = getUserInfo;
 exports.requestZipBundle = requestZipBundle;

@@ -1,9 +1,12 @@
 {
   "name": "download-nginx-config",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Get your 3scale Nginx configs",
   "main": "index.js",
-  "repository": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vdel26/nginx-conf-downloader.git"
+  },
   "scripts": {
     "test": "node_modules/mocha/bin/mocha test/"
   },

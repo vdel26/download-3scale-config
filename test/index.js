@@ -2,7 +2,7 @@ var expect = require('chai').expect,
     app    = require('../index.js'),
     prompt = require('prompt'),
     fs     = require('fs'),
-    rimraf = require('rimraf'),
+    rm     = require('rimraf'),
     nock   = require('nock');
 
 
@@ -53,7 +53,7 @@ describe('Nginx download app', function () {
 
     afterEach(function (done) {
       // delete folder with unzipped files
-      rimraf('nginx-conf', done);
+      rm('nginx-conf', done);
     });
 
     it('should download nginxtest.zip and unzip it to /nginx-conf', function (done) {
