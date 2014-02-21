@@ -8,15 +8,17 @@ var nconf  = require('nconf'),
 
 /**
  * Get user info from previous config or
- * otherwise prompt him
+ * from user input
  * @param  {Function} cb - callback
  */
 function getInfo (cb) {
   if (fs.existsSync('config.json')) {
+    // use existing configuration
     nconf.file('config.json');
     return cb(null, nconf.get());
   }
   else {
+    // ask the user
     return getUserInfo(cb);
   }
 }
@@ -37,15 +39,29 @@ function getUserInfo (cb) {
         message: 'Wrong format (e.g. mycompany-admin.3scale.net)'
       },
       providerKey: {
-        description: 'provider key '.magenta,
+        description: 'Provider key '.magenta,
         required: true
+      },
+      nginxPath: {
+        description: 'Choose a location to download the files. default: '.magenta,
+        required: true,
+        default: process.env.HOME,
+        message: 'Path does not exist or has wrong format',
+        conform: function (input) {
+          return fs.existsSync(path.dirname(input));
+        },
+        before: function (input) {
+          return path.resolve(path.normalize(input), '3scale-nginx-conf');
+        }
       }
     }
-  }, function (err, response) {
+  },
+  function (err, response) {
     if (err) return cb(err);
     saveInfo({
       domain: response.domain,
-      providerKey: response.providerKey
+      providerKey: response.providerKey,
+      nginxPath: response.nginxPath
     }, cb)
   });
 }
@@ -71,9 +87,9 @@ function saveInfo (userInput, cb) {
  * @param  {Object}   opts - request options
  * @param  {Function} cb   - callback
  */
-function requestZipBundle (opts, cb) {
+function requestZipBundle (opts, extractPath, cb) {
   var req = https.request(opts, function (response) {
-    unpackZipResponse(response, cb);
+    unpackZipResponse(response, extractPath, cb);
   });
   req.on('error', function (err) {
     return cb(err);
@@ -82,10 +98,9 @@ function requestZipBundle (opts, cb) {
 }
 
 
-function unpackZipResponse (response, cb) {
-  var unzipPath = path.resolve(process.env.HOME, '3scale-nginx-conf');
+function unpackZipResponse (response, extractPath, cb) {
   response
-    .pipe(unzip.Extract({ path: unzipPath }))
+    .pipe(unzip.Extract({ path: extractPath }))
     .on('close', function () {
       return cb(null);
     })
@@ -94,7 +109,8 @@ function unpackZipResponse (response, cb) {
     });
 }
 
-
+/**
+ * public interface
+ */
 exports.getInfo = getInfo;
-exports.getUserInfo = getUserInfo;
 exports.requestZipBundle = requestZipBundle;

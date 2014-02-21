@@ -8,11 +8,12 @@ var expect = require('chai').expect,
 
 
 describe('Nginx download app', function () {
-  describe('#getUserInfo', function () {
+  describe('#getInfo', function () {
     beforeEach(function (){
       prompt.override = {
         domain: 'dummydomain-admin.3scale.net',
-        providerKey: '1234567890ABC'
+        providerKey: '1234567890ABC',
+        nginxPath: '/home/nginx-conf'
       };
     });
 
@@ -21,17 +22,18 @@ describe('Nginx download app', function () {
       fs.unlinkSync('config.json');
     });
 
-    it('should require two inputs', function (done) {
-      app.getUserInfo(function (err, res) {
+    it('should require three inputs', function (done) {
+      app.getInfo(function (err, res) {
         expect(res).to.have.a.property('domain', 'dummydomain-admin.3scale.net');
         expect(res).to.have.a.property('providerKey', '1234567890ABC');
-        expect(Object.keys(res).length).to.equal(2);
+        expect(res).to.have.a.property('nginxPath', '/home/nginx-conf');
+        expect(Object.keys(res).length).to.equal(3);
         done();
       });
     });
 
     it('should create a config.json file with expected properties', function (done) {
-      app.getUserInfo(function (res) {
+      app.getInfo(function (res) {
         var conf;
         try { conf = require('../config.json'); } catch (e) {}
         expect(conf).to.exist;
@@ -44,7 +46,7 @@ describe('Nginx download app', function () {
 
 
   describe('#requestZipBundle', function () {
-    var unzipPath = path.resolve(process.env.HOME, '3scale-nginx-conf');
+    var extractPath = path.resolve(process.env.HOME, '3scale-nginx-conf');
 
     beforeEach(function () {
       nock('https://dummydomain-admin.3scale.net')
@@ -56,7 +58,7 @@ describe('Nginx download app', function () {
 
     afterEach(function (done) {
       // delete folder with unzipped files
-      rm(unzipPath, done);
+      rm(extractPath, done);
     });
 
     it('should download nginxtest.zip and unzip it to /nginx-conf', function (done) {
@@ -66,8 +68,8 @@ describe('Nginx download app', function () {
         path: '/admin/api/nginx.zip?provider_key=1234567890ABC',
         method: 'GET'
       };
-      app.requestZipBundle(opts, function (err) {
-        expect(fs.existsSync(unzipPath)).to.be.true;
+      app.requestZipBundle(opts, extractPath, function (err) {
+        expect(fs.existsSync(extractPath)).to.be.true;
         done();
       });
     });
