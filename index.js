@@ -7,8 +7,8 @@ var nconf  = require('nconf'),
 
 
 /**
- * Get user info from previous config or
- * from user input
+ * Get user info from previous config
+ * if exists, otherwise from user input
  * @param  {Function} cb - callback
  */
 function getInfo (cb) {
@@ -85,6 +85,7 @@ function saveInfo (userInput, cb) {
 /**
  * Request zip file and unzip it to disk
  * @param  {Object}   opts - request options
+ * @param  {String}   extractPath - path for extracted files
  * @param  {Function} cb   - callback
  */
 function requestZipBundle (opts, extractPath, cb) {

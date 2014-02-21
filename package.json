@@ -1,6 +1,6 @@
 {
   "name": "download-nginx-config",
-  "version": "0.0.2",
+  "version": "0.1.0",
   "description": "Get your 3scale Nginx configs",
   "main": "index.js",
   "preferGlobal": "true",
