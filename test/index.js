@@ -19,7 +19,7 @@ describe('Nginx download app', function () {
 
     afterEach(function () {
       // delete config.json created with user input
-      fs.unlinkSync('config.json');
+      fs.unlinkSync('.config.json');
     });
 
     it('should require three inputs', function (done) {
@@ -35,7 +35,7 @@ describe('Nginx download app', function () {
     it('should create a config.json file with expected properties', function (done) {
       app.getInfo(function (res) {
         var conf;
-        try { conf = require('../config.json'); } catch (e) {}
+        try { conf = require('../.config.json'); } catch (e) {}
         expect(conf).to.exist;
         expect(conf).to.have.a.property('domain', 'dummydomain-admin.3scale.net');
         expect(conf).to.have.a.property('providerKey', '1234567890ABC');

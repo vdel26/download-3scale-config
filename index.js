@@ -12,9 +12,9 @@ var nconf  = require('nconf'),
  * @param  {Function} cb - callback
  */
 function getInfo (cb) {
-  if (fs.existsSync('config.json')) {
+  if (fs.existsSync('.config.json')) {
     // use existing configuration
-    nconf.file('config.json');
+    nconf.file('.config.json');
     return cb(null, nconf.get());
   }
   else {
@@ -69,7 +69,7 @@ function getUserInfo (cb) {
 
 function saveInfo (userInput, cb) {
   // save user info to 'config.json'
-  nconf.file('config.json');
+  nconf.file('.config.json');
 
   for (var param in userInput) {
     if (userInput.hasOwnProperty(param))

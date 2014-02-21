@@ -24,18 +24,18 @@ function main () {
     mod.requestZipBundle(opts, userInput.nginxPath, function (err) {
       if (err) {
         console.log('ERROR: ' + err.message);
-        fs.unlinkSync('config.json');
+        fs.unlinkSync('.config.json');
         return process.exit(1);
       }
-      console.log('Nginx configuration were downloaded to ' + userInput.nginxPath);
+      console.log('Nginx configuration files were downloaded to ' + userInput.nginxPath);
     });
   });
 }
 
 if (require.main === module) {
   // call with --reset option to delete existing configuration
-  if (process.argv[2] === '--reset' && fs.existsSync('config.json')) {
-    fs.unlinkSync('config.json')
+  if (process.argv[2] === '--reset' && fs.existsSync('.config.json')) {
+    fs.unlinkSync('.config.json')
   }
   main();
 }
